@@ -14,7 +14,7 @@ export default {
   data() {
     return {
       email: "",
-      password: "",
+      password: ""
     };
   },
   methods: {
@@ -22,7 +22,7 @@ export default {
       axios
         .post("//localhost:3000/login", {
           email: this.email,
-          password: this.password,
+          password: this.password
         })
         .then(({ data }) => {
           localStorage.setItem("user", JSON.stringify(data));
@@ -31,7 +31,7 @@ export default {
           ] = `Bearer ${data.token}`;
           this.$router.push("/dashboard");
         });
-    },
-  },
+    }
+  }
 };
 </script>

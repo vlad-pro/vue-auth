@@ -10,7 +10,6 @@
   </div>
 </template>
 
-
 <script>
 import axios from "axios";
 import EventCard from "../components/EventCard";
@@ -21,9 +20,9 @@ export default {
     return { events: "Loading events..." };
   },
   created() {
-    axios.get("//localhost:3000/dashboard").then(({ data }) => {
+    axios.get("//localhost:5000/dashboard").then(({ data }) => {
       this.events = data.events.events;
     });
-  },
+  }
 };
 </script>
