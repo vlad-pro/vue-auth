@@ -1,7 +1,14 @@
-var express = require("express");
-var jwt = require("jsonwebtoken");
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+const events = require("./db/events.json");
 
 const app = express();
+
+app.use(cors());
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   res.json({
@@ -9,32 +16,74 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/protected", verifyToken, (req, res) => {
-  //Do we want to do this async or not?
-  jwt.verify(req.token, "the_secret_key"),
-    (err, authData) => {
-      if (err) {
-        res.sendStatus(403);
-      } else {
-        res.json({
-          message: "You've successly accessed a protected route!",
-          authData
-        });
-      }
-    };
-});
-
-app.post("/login", (req, res) => {
-  // Are we fine with just faking out a user?
-  const user = { name: "Nancy Usery", email: "nancy@gmail.com", id: 4321 };
-  const token = jwt.sign({ user }, "the_secret_key");
-  res.json({
-    token
+app.get("/dashboard", (req, res) => {
+  jwt.verify(req.token, "the_secret_key", err => {
+    if (err) {
+      res.sendStatus(401);
+    } else {
+      res.json({
+        events: events
+      });
+    }
   });
 });
 
+app.post("/register", (req, res) => {
+  if (req.body) {
+    const user = {
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password
+      // In a production app, you'll want to encrypt the password
+    };
+
+    const data = JSON.stringify(user, null, 2);
+    var dbUserEmail = require("./db/user.json").email;
+
+    if (dbUserEmail === req.body.email) {
+      res.sendStatus(400);
+    } else {
+      fs.writeFile("./db/user.json", data, err => {
+        if (err) {
+          console.log(err + data);
+        } else {
+          const token = jwt.sign({ user }, "the_secret_key");
+          // In a production app, you'll want the secret key to be an environment variable
+          res.json({
+            token,
+            email: user.email,
+            name: user.name
+          });
+        }
+      });
+    }
+  } else {
+    res.sendStatus(400);
+  }
+});
+
+app.post("/login", (req, res) => {
+  const userDB = fs.readFileSync("./db/user.json");
+  const userInfo = JSON.parse(userDB);
+  if (
+    req.body &&
+    req.body.email === userInfo.email &&
+    req.body.password === userInfo.password
+  ) {
+    const token = jwt.sign({ userInfo }, "the_secret_key");
+    // In a production app, you'll want the secret key to be an environment variable
+    res.json({
+      token,
+      email: userInfo.email,
+      name: userInfo.name
+    });
+  } else {
+    res.sendStatus(400);
+  }
+});
+
+// MIDDLEWARE
 function verifyToken(req, res, next) {
-  //Get auth header value
   const bearerHeader = req.headers["authorization"];
 
   if (typeof bearerHeader !== "undefined") {
@@ -43,7 +92,7 @@ function verifyToken(req, res, next) {
     req.token = bearerToken;
     next();
   } else {
-    res.sendStatus(403);
+    res.sendStatus(401);
   }
 }
 
