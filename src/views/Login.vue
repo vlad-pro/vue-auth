@@ -4,6 +4,9 @@
       <input v-model="email" type="email" name="email" value="" />
       <input v-model="password" type="password" name="" value="" />
       <button type="submit" name="button">Login</button>
+      <router-link to="/register">
+        Register if you do not have an account.
+      </router-link>
     </form>
   </div>
 </template>
