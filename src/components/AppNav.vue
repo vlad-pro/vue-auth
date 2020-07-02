@@ -3,7 +3,7 @@
     <router-link to="/">
       Home
     </router-link>
-    <router-link to="dashboard">
+    <router-link v-if="loggedIn" to="dashboard">
       Dashboard
     </router-link>
     <router-link v-if="!loggedIn" to="/login" class="button">
@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     logout() {
-      console.log("logged out");
+      this.$store.dispatch("logout");
     }
   }
 };

@@ -15,6 +15,15 @@ export default new Vuex.Store({
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${userData.token}`;
+    },
+    CLEAR_USER_DATA() {
+      localStorage.removeItem("user");
+      // // removing the state from the arguments and commenting the following lines
+      // state.user = null;
+      // axios.defaults.headers.common["Authorization"] = null;
+      // // and adding the following will achive the same
+      // // Plus it's more scalable if using modules in state
+      location.reload();
     }
   },
   actions: {
@@ -22,7 +31,6 @@ export default new Vuex.Store({
       return axios
         .post("//localhost:5000/register", credentials)
         .then(({ data }) => {
-          console.log(data);
           commit("SET_USER_DATA", data);
         });
     },
@@ -30,9 +38,11 @@ export default new Vuex.Store({
       return axios
         .post("//localhost:5000/login", credentials)
         .then(({ data }) => {
-          console.log(data);
           commit("SET_USER_DATA", data);
         });
+    },
+    logout({ commit }) {
+      commit("CLEAR_USER_DATA");
     }
   },
   modules: {},
