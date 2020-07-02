@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { authComputed } from "@/store/helpers.js";
+import { authComputed } from "../store/helpers.js";
 export default {
   computed: {
     ...authComputed

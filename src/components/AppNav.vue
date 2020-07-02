@@ -9,14 +9,22 @@
     <router-link v-if="!loggedIn" to="/login" class="button">
       Login
     </router-link>
+    <button v-else class="logoutButton" @click="logout">
+      Logout
+    </button>
   </div>
 </template>
 
 <script>
-import { authComputed } from "@/store/helpers.js";
+import { authComputed } from "../store/helpers.js";
 export default {
   computed: {
     ...authComputed
+  },
+  methods: {
+    logout() {
+      console.log("logged out");
+    }
   }
 };
 </script>

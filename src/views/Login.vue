@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   data() {
     return {
@@ -22,16 +21,12 @@ export default {
   },
   methods: {
     login() {
-      axios
-        .post("//localhost:5000/login", {
+      this.$store
+        .dispatch("login", {
           email: this.email,
           password: this.password
         })
-        .then(({ data }) => {
-          localStorage.setItem("user", JSON.stringify(data));
-          axios.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${data.token}`;
+        .then(() => {
           this.$router.push("/dashboard");
         });
     }
