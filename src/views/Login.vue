@@ -4,6 +4,11 @@
       <input v-model="email" type="email" name="email" value="" />
       <input v-model="password" type="password" name="" value="" />
       <button type="submit" name="button">Login</button>
+
+      <p>
+        {{ error }}
+      </p>
+
       <router-link to="/register">
         Register if you do not have an account.
       </router-link>
@@ -16,7 +21,8 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      error: null
     };
   },
   methods: {
@@ -28,6 +34,9 @@ export default {
         })
         .then(() => {
           this.$router.push("/dashboard");
+        })
+        .catch(err => {
+          this.error = err.response.data.error;
         });
     }
   }
